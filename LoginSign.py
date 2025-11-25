@@ -18,7 +18,6 @@ def auth_page():
         """, unsafe_allow_html=True)
         
         with st.container(border=True):
-            # --- LOGIN ---
             if st.session_state['auth_mode'] == 'login':
                 st.subheader("🔑 Masuk Akun")
                 with st.form("login_form"):
@@ -48,9 +47,8 @@ def auth_page():
                         st.session_state['auth_mode'] = 'register'
                         st.rerun()
 
-            # --- REGISTER ---
             elif st.session_state['auth_mode'] == 'register':
-                st.subheader("📝 Buat Akun Baru")
+                st.subheader("Buat Akun Baru")
                 st.info("Lengkapi data berikut untuk mendaftar.")
                 
                 with st.form("register_form"):
@@ -60,27 +58,26 @@ def auth_page():
                     confirm_password = st.text_input("Retype Password *", type='password')
                     
                     st.markdown("<br>", unsafe_allow_html=True)
-                    submitted = st.form_submit_button("Daftar Sekarang 🤝")
+                    submitted = st.form_submit_button("Daftar Sekarang")
 
                     if submitted:
-                        # Validasi
                         if not new_user or not new_email or not new_password:
-                            st.warning("⚠️ Semua kolom bertanda (*) wajib diisi.")
+                            st.warning("Semua kolom bertanda (*) wajib diisi.")
                         elif new_password != confirm_password:
-                            st.error("❌ Password tidak sama!")
+                            st.error("Password tidak sama!")
                         elif len(new_password) < 4:
-                            st.warning("⚠️ Password minimal 4 karakter.")
+                            st.warning("Password minimal 4 karakter.")
                         elif "@" not in new_email:
-                            st.warning("⚠️ Format E-mail tidak valid.")
+                            st.warning("Format E-mail tidak valid.")
                         else:
                             hashed_pw = make_hashes(new_password)
                             if register_user(new_user, new_email, hashed_pw):
-                                st.success("✅ Akun berhasil dibuat! Silakan Login.")
+                                st.success("Akun berhasil dibuat! Silakan Login.")
                                 time.sleep(1.5)
                                 st.session_state['auth_mode'] = 'login' 
                                 st.rerun()
                             else:
-                                st.error("❌ Username sudah digunakan. Atau E-mail sudah terdaftar.")
+                                st.error("Username sudah digunakan. Atau E-mail sudah terdaftar.")
                 
                 st.markdown("---")
                 if st.button("Kembali ke Login"):
