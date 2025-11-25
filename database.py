@@ -6,7 +6,6 @@ import random
 import sqlite3
 from datetime import datetime, timedelta
 
-# --- Konfigurasi Database ---
 DB_NAME = 'database_baru_v3.db' 
 
 def make_hashes(password):
@@ -84,7 +83,6 @@ def update_user_profile(username, full_name, age, about_me, work_history, new_em
     except Exception:
         return False
 
-# Inisialisasi Database & Buat Admin Default
 init_db()
 if not login_user_db('admin', make_hashes('admin')):
     register_user('admin', 'admin@getcareer.com', make_hashes('admin'), 'admin')
