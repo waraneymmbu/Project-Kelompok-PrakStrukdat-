@@ -3,9 +3,6 @@ import time
 from database import make_hashes, login_user_db, register_user
 
 def auth_page():
-    """
-    Menampilkan halaman login dan registrasi menggunakan mode vertikal dan session state.
-    """
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         st.markdown("<br>", unsafe_allow_html=True)
