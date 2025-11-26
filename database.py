@@ -9,16 +9,13 @@ from datetime import datetime, timedelta
 DB_NAME = 'database_baru_v3.db' 
 
 def make_hashes(password):
-    """Menghasilkan hash SHA256 dari password."""
     return hashlib.sha256(str.encode(password)).hexdigest()
 
 @st.cache_resource
 def get_db_connection():
-    """Mendapatkan koneksi database SQLite."""
     return sqlite3.connect(DB_NAME, check_same_thread=False)
 
 def init_db():
-    """Menginisialisasi tabel database jika belum ada."""
     conn = get_db_connection()
     c = conn.cursor()
     c.execute('''
@@ -37,7 +34,6 @@ def init_db():
     conn.commit()
 
 def register_user(username, email, password_hash, role='seeker'):
-    """Mendaftarkan pengguna baru ke database."""
     conn = get_db_connection()
     c = conn.cursor()
     join_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -54,7 +50,6 @@ def register_user(username, email, password_hash, role='seeker'):
         return False
 
 def login_user_db(username, password_hash):
-    """Memverifikasi kredensial login pengguna."""
     conn = get_db_connection()
     c = conn.cursor()
     c.execute('SELECT * FROM userdata WHERE username = ? AND password = ?', (username, password_hash))
@@ -62,7 +57,6 @@ def login_user_db(username, password_hash):
     return data
 
 def get_user_profile(username):
-    """Mengambil data profil pengguna."""
     conn = get_db_connection()
     c = conn.cursor()
     c.execute('SELECT email, full_name, age, about_me, work_history FROM userdata WHERE username = ?', (username,))
@@ -70,7 +64,6 @@ def get_user_profile(username):
     return data
 
 def update_user_profile(username, full_name, age, about_me, work_history, new_email):
-    """Memperbarui data profil pengguna."""
     conn = get_db_connection()
     c = conn.cursor()
     try:
