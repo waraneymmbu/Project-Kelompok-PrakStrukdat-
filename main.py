@@ -71,7 +71,7 @@ def get_jobs():
     roles = ['Data Analyst', 'Software Engineer', 'Product Manager', 'UI/UX Designer', 'Digital Marketing', 'HR Manager']
     
     for i in range(30):
-        gaji_int = random.randint(6, 35) # Gaji dalam juta
+        gaji_int = random.randint(6, 35)
         data.append({
             "ID": i + 1,
             "Posisi": random.choice(roles),
