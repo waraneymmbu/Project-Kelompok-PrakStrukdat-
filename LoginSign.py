@@ -9,18 +9,18 @@ def auth_page():
         st.markdown("""
         <div class="centered-content">
             <span class="big-icon">💼</span> 
-            <h1 style='color:#00B14F; text-align: center;'>Getcareer</h1>
+            <h1 style='color:white; text-align: center;'>Getcareer</h1>
             <p style='text-align: center;'>Bangun Masa Depan Kariermu Di Sini</p>
         </div>
         """, unsafe_allow_html=True)
         
         with st.container(border=True):
             if st.session_state['auth_mode'] == 'login':
-                st.subheader("🔑 Masuk Akun")
+                st.subheader("Login ke Akun anda")
                 with st.form("login_form"):
                     username = st.text_input("Username")
                     password = st.text_input("Password", type='password')
-                    submitted = st.form_submit_button("Masuk 🚀")
+                    submitted = st.form_submit_button("Log-In")
 
                     if submitted:
                         hashed_pswd = make_hashes(password)
@@ -37,25 +37,24 @@ def auth_page():
                             st.error("Username atau Password salah")
 
                 st.markdown("---")
-                col_text, col_btn = st.columns([2,1])
-                with col_text: st.write("Belum punya akun?")
-                with col_btn:
-                    if st.button("Daftar"):
-                        st.session_state['auth_mode'] = 'register'
-                        st.rerun()
+
+                st.write("Belum punya akun?")
+                if st.button("Buat Akun"):
+                    st.session_state['auth_mode'] = 'register'
+                    st.rerun()
 
             elif st.session_state['auth_mode'] == 'register':
                 st.subheader("Buat Akun Baru")
                 st.info("Lengkapi data berikut untuk mendaftar.")
                 
                 with st.form("register_form"):
-                    new_user = st.text_input("Username *", placeholder="Buat username unik")
-                    new_email = st.text_input("Alamat E-mail *", placeholder="contoh@email.com")
-                    new_password = st.text_input("Password *", type='password')
-                    confirm_password = st.text_input("Retype Password *", type='password')
+                    new_user = st.text_input("Username *", placeholder="Buat username Anda")
+                    new_email = st.text_input("Alamat E-mail *", placeholder="contoh: strukdat@gmail.com")
+                    new_password = st.text_input("Password *", type='password', placeholder="Buat password Anda")
+                    confirm_password = st.text_input("Retype Password *", type='password', placeholder="Ketik ulang password")
                     
                     st.markdown("<br>", unsafe_allow_html=True)
-                    submitted = st.form_submit_button("Daftar Sekarang")
+                    submitted = st.form_submit_button("Buat Akun")
 
                     if submitted:
                         if not new_user or not new_email or not new_password:
@@ -77,6 +76,6 @@ def auth_page():
                                 st.error("Username sudah digunakan. Atau E-mail sudah terdaftar.")
                 
                 st.markdown("---")
-                if st.button("Kembali ke Login"):
+                if st.button("Kembali ke halaman Log-In"):
                     st.session_state['auth_mode'] = 'login'
                     st.rerun()
