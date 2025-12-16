@@ -1,41 +1,76 @@
 import streamlit as st
-import random
+import requests
 
-def ai_consultation_page(get_jobs):
-    st.title("🤖 Konsultasi AI: Temukan Pekerjaan Cocok untukmu")
+API_KEY = "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"  
+
+
+def ask_groq(prompt: str) -> str:
+    url = "https://api.groq.com/openai/v1/chat/completions"
+
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7,
+    }
+
+    try:
+        res = requests.post(url, headers=headers, json=data, timeout=30)
+    except requests.RequestException as e:
+        return f"Gagal menghubungi API: {e}"
+
+    if res.status_code != 200:
+        return f"API Error ({res.status_code}): {res.text}"
+
+    j = res.json()
+    return j["choices"][0]["message"]["content"]
+
+
+def ai_consultation_page():
+
+    st.title("Konsultasi AI: Temukan Pekerjaan Cocok untukmu")
 
     st.write("""
-    Masukkan preferensi atau minat kamu, kemudian AI akan memberikan rekomendasi pekerjaan yang cocok.
+    Masukkan preferensi dan data dirimu. AI akan memberikan rekomendasi pekerjaan yang paling cocok.
     """)
 
-    user_input = st.text_area("Ceritakan minat, skill, atau bidang pekerjaan yang kamu suka:")
+    with st.form("job_form1"):
+        minat = st.text_input("Minat (contoh: desain, game, coding):")
+        bakat = st.text_input("Bakat/keterampilanmu:")
+        kepribadian = st.text_input("Kepribadian (introvert/ekstrovert/dll):")
+        hobi = st.text_input("Hobi paling sering dilakukan:")
+        tujuan = st.text_input("Tujuan karier (gaji besar, fleksibel, kreatif, dll):")
 
-    if st.button("Cari Rekomendasi Pekerjaan"):
-        if not user_input.strip():
-            st.warning("Tuliskan sedikit tentang minat atau skill kamu terlebih dahulu.")
-            return
+        submit = st.form_submit_button("Dapatkan Rekomendasi AI")
 
-        st.info("AI sedang menganalisis...")
+    if not submit:
+        return
 
-        df_jobs = get_jobs()
+    if not minat.strip():
+        st.warning("Isi minimal bagian *minat* dulu.")
+        return
 
-        user_keywords = [kw.lower() for kw in user_input.split()]
+    prompt = f"""
+Buatkan rekomendasi pekerjaan berdasarkan data berikut:
 
-        recommended_jobs = []
-        for _, job in df_jobs.iterrows():
-            job_title_lower = job['Posisi'].lower()
-            if any(kw in job_title_lower for kw in user_keywords):
-                recommended_jobs.append(job)
+Minat: {minat}
+Bakat: {bakat}
+Kepribadian: {kepribadian}
+Hobi: {hobi}
+Tujuan Karier: {tujuan}
 
-        if not recommended_jobs:
-            recommended_jobs = df_jobs.sample(min(3, len(df_jobs))).to_dict('records')
-        else:
-            recommended_jobs = [job.to_dict() for job in recommended_jobs]
+Berikan:
+1. 3 rekomendasi pekerjaan paling cocok
+2. Alasan singkat
+3. Kelebihan & kekurangannya bagi user
+4. Skill yang harus ditingkatkan
+"""
 
-        st.subheader("💼 Rekomendasi Pekerjaan untukmu:")
-        for job in recommended_jobs:
-            st.markdown(f"**{job['Posisi']}** di {job['Perusahaan']}")
-            st.markdown(f"- Lokasi: {job['Lokasi']}")
-            st.markdown(f"- Gaji: {job['Gaji_Num']} juta")
-            st.markdown(f"- Tanggal Posting: {job['Tanggal Posting']}")
-            st.markdown("---")
+    jawaban = ask_groq(prompt)
+
+    st.subheader("Rekomendasi AI")
+    st.write(jawaban)
